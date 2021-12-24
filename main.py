@@ -19,21 +19,30 @@ def generate_cook_book():
 
 
 def get_shop_list_by_dishes(dishes, person_count):
+    dishes.sort()
     cook_book = generate_cook_book()
     ingredient_value = {}
-    for dish in dishes:
-        if dish in cook_book.keys():
-            ingredients_list = cook_book.get(dish)
-            for ingredient in ingredients_list:
-                ingredient_name = ingredient.pop('ingredient_name')
-                if ingredient_name in ingredient_value.keys():
-                    ingredient['quantity'] = int(ingredient['quantity']) * 2
-                    ingredient_value[ingredient_name] = ingredient
-                else:
-                    ingredient_value[ingredient_name] = ingredient
+    while dishes:
+        for dish in dishes:
+            count = dishes.count(dish)
+            if dish in cook_book.keys():
+                ingredients_list = cook_book.get(dish)
+                for ingredient in ingredients_list:
+                    ingredient_name = ingredient.pop('ingredient_name')
+                    if ingredient_name in ingredient_value.keys():
+                        ingredient['quantity'] = int(ingredient['quantity']) * count
+                        for name, old_values in ingredient_value.items():
+                            if name == ingredient_name:
+                                ingredient['quantity'] = int(old_values['quantity']) + int(ingredient['quantity'])
+                        ingredient_value[ingredient_name] = ingredient
+                    else:
+                        ingredient['quantity'] = int(ingredient['quantity']) * count
+                        ingredient_value[ingredient_name] = ingredient
+                for n in range(0, count):
+                    dishes.remove(dish)
     for value in ingredient_value.values():
-        value['quantity'] = int(value['quantity']) * 2
+        value['quantity'] = int(value['quantity']) * person_count
     return ingredient_value
 
 
-print(get_shop_list_by_dishes(['Фахитос', 'Омлет'], 2))
+print(get_shop_list_by_dishes(['Омлет', 'Омлет'], 2))
